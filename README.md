@@ -2,8 +2,8 @@
 
 A personal collection of open-source tools to streamline the compositing workflow in Nuke.
 
-**Author:** David Francois — Compositor & Technical Artist
-**GitHub:** [github.com/Duckydav](https://github.com/Duckydav)
+**Author:** David Francois — Compositor & Technical Artist  
+**GitHub:** [github.com/Duckydav](https://github.com/Duckydav)  
 **LinkedIn:** [linkedin.com/in/davidfrancois](https://www.linkedin.com/in/davidfrancois/)
 
 ---
