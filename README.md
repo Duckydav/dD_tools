@@ -8,7 +8,7 @@ A personal collection of open-source tools to streamline the compositing workflo
 
 ---
 
-**Layer Manager & dD Tools :** [Layer Manager Demo for Nuke]((https://vimeo.com/1175681073))  
+**Layer Manager & dD Tools :** [Layer Manager Demo for Nuke](https://vimeo.com/1175681073)  
 The video walks through the main workflow: navigating layer sections, 
 creating LightGrade and Shuffle nodes on the fly, 
 auto-labeling, managing heavy nodes with $gui, all from a single panel.
