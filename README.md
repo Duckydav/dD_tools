@@ -29,17 +29,21 @@ Experimental utilities for working with Cryptomatte nodes in Nuke.
 - Configurable exclude/singularize word lists
 
 ### Label auto
-Quick label tools for selected nodes.
+Experimental utilities. Quick label tools for selected nodes.
 
 ### $GUI 
 $GUI is a Nuke tool designed to manage the disable knob and optimize workflows.
+- GitHub: [github.com/Duckydav](https://github.com/Duckydav/Gui)
 
 ### Shuffle Utilities
 Shuffle Auto simplifies the use of Shuffle2 nodes in Nuke by automatically displaying connections directly in the Node Graph.
+- GitHub: [github.com/Duckydav](https://github.com/Duckydav/shuffle_auto)
 
 ### Viewer Caller
 Viewer Caller is a Python script designed to locate and organize Viewer nodes in Nuke's Node Graph.
+- GitHub: [github.com/Duckydav](https://github.com/Duckydav/Viewer_caller)
 
+  
 ---
 
 ## Requirements
