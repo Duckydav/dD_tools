@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# dD Tools user preferences (generated at runtime)
+lm_prefs.json
+dD_gui_settings.json
+
+# Nuke private files
+preferences*.nk
+ScriptEditorHistory.xml
+Workspaces/
+ToolSets/
+KS3/
+*.zip
+
+# Old/archive folders
+__old___/
+
+# Claude Code private instructions
+CLAUDE.md
+
+# OS
+.DS_Store
+Thumbs.db

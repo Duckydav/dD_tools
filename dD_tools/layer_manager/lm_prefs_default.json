@@ -1,0 +1,16 @@
+{
+  "_comment": "LayerManager default preferences -- source: get_default_keywords()",
+  "_version": "2.40",
+  "light_keywords":    ["lgt*", "rgb*", "dome", "key", "fill", "rim", "sun", "emit"],
+  "mask_keywords":     ["matte", "mask"],
+  "utility_keywords":  ["ao", "normal", "pos", "depth", "motion", "pref", "uv", "deep", "_world", "_object"],
+  "custom_keywords":   ["DIMATTE"],
+  "exclusion_keywords":["rgba", "other", "Crypto"],
+  "custom_title":      "Dimatte",
+  "disable_tech":      false,
+  "disable_light":     false,
+  "disable_mask":      false,
+  "disable_utility":   false,
+  "disable_custom":    true,
+  "refresh_mode":      "hybrid"
+}

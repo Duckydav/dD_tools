@@ -1,0 +1,643 @@
+#! C:/Program Files/Nuke14.0v5/nuke-14.0.5.dll -nx
+version 14.0 v5
+Group {
+ name lightgrade
+ onCreate "n = nuke.thisNode()\nfor k_name in ('blackpoint', 'black', 'offset'):\n    k = n.knob(k_name)\n    if k:\n        k.setSingleValue(True)"
+ tile_color 0x5c8a89
+ addUserKnob {20 _1 l Settings}
+ addUserKnob {26 lightgrade_title l "" t "link to help" +STARTLINE T "<br><font size=7><a href='https://github.com/Duckydav/LayerManager' style='text-decoration:none; color:#DADADA;'>Light</a> <font color='#FCB132'><b><a href='https://github.com/Duckydav/LayerManager' style='text-decoration:none; color:#FCB132;'>Grade</a></b></font><br>"}
+ addUserKnob {6 contactsheet l "LayerAOV Contact sheet" +STARTLINE}
+ addUserKnob {22 add_layer_pyscript l "Add Layer" T "import nuke\nn = nuke.thisNode()\nv = nuke.activeViewer()\nif not v:\n    nuke.message('No active Viewer.')\nelse:\n    ch = v.node().knob('channels').value()\n    ln = ch.split('.')\[0\] if '.' in ch else ch\n    if not ln or ln.lower() in ('rgba','rgb','alpha','none',''):\n        nuke.message('No valid layer selected in Viewer.')\n    else:\n        idx = None\n        for i in range(1, 9):\n            k = 'aov_in%d_in' % i\n            if k in n.knobs() and n.knob(k).value().strip().lower() in ('', 'none', 'rgba', 'rgb', 'alpha'):\n                idx = i\n                break\n        if idx is None:\n            nuke.message('Maximum 8 AOV layers.')\n        else:\n            n.knob('aov_in%d_in' % idx).setValue(ln)\n            empty = ('', 'none', 'rgba', 'rgb', 'alpha')\n            for j in range(1, 9):\n                jk = 'aov_in%d_in' % j\n                if jk in n.knobs():\n                    vis = n.knob(jk).value().strip().lower() not in empty\n                    for s in ('_in', '_disable', '_solo'):\n                        kn = 'aov_in%d%s' % (j, s)\n                        if kn in n.knobs():\n                            n.knobs()\[kn\].setVisible(vis)\n                            if vis:\n                                n.knobs()\[kn\].clearFlag(nuke.INVISIBLE)\n            if 'layer_count' in n.knobs():\n                c = sum(1 for i in range(1, 9) if 'aov_in%d_in' % i in n.knobs() and n.knob('aov_in%d_in' % i).value().strip().lower() not in empty)\n                n.knob('layer_count').setValue(c)\n            tcl = \[\]\n            for j in range(1, 9):\n                jk = 'aov_in%d_in' % j\n                dk = 'aov_in%d_disable' % j\n                if jk in n.knobs():\n                    raw = n.knob(jk).value()\n                    vl = raw.strip() if isinstance(raw, str) else ''\n                    dis = n.knob(dk).value() if dk in n.knobs() else 0\n                    if vl and vl.lower() not in ('rgba', 'rgb', 'alpha', 'none', '') and not dis:\n                        tcl.append('\[regsub lg_ \[value aov_in%d_in\] \"\"\]' % j)\n            lines = \[\]\n            for j in range(0, len(tcl), 3):\n                lines.append(' | '.join(tcl\[j:j+3\]))\n            n.knob('autolabel').setValue('')\n            n.knob('label').setValue(chr(10).join(lines))" +STARTLINE}
+ addUserKnob {22 clear_layers_pyscript l "Clear All Layers" -STARTLINE T "import nuke\nn = nuke.thisNode()\nif n:\n    for i in range(1, 9):\n        sh = n.node('aov_in%d' % i)\n        if sh:\n            sh.knob('in').setValue('none')\n        for suffix in ('_in', '_solo'):\n            kn = 'aov_in%d%s' % (i, suffix)\n            if kn in n.knobs():\n                n.knobs()\[kn\].setVisible(i == 1 and suffix == '_in')\n    if 'layer_count' in n.knobs():\n        n.knob('layer_count').setValue(0)\n    if 'label' in n.knobs():\n        n.knob('label').setValue('')\n    if 'autolabel' in n.knobs():\n        n.knob('autolabel').setValue('')"}
+ addUserKnob {26 aovs_layers l "@b;Layers"}
+ addUserKnob {41 aov_in1_in l "layer AOV1:" T aov_in1.in}
+ addUserKnob {6 aov_in1_solo l " solo" -STARTLINE}
+ addUserKnob {41 aov_in2_in l "layer AOV2:" +HIDDEN T aov_in2.in}
+ addUserKnob {6 aov_in2_solo l solo -STARTLINE +HIDDEN}
+ addUserKnob {41 aov_in3_in l "layer AOV3:" +HIDDEN T aov_in3.in}
+ addUserKnob {6 aov_in3_solo l solo -STARTLINE +HIDDEN}
+ addUserKnob {41 aov_in4_in l "layer AOV4:" +HIDDEN T aov_in4.in}
+ addUserKnob {6 aov_in4_solo l solo -STARTLINE +HIDDEN}
+ addUserKnob {41 aov_in5_in l "layer AOV5:" +HIDDEN T aov_in5.in}
+ addUserKnob {6 aov_in5_solo l solo -STARTLINE +HIDDEN}
+ addUserKnob {41 aov_in6_in l "layer AOV6:" +HIDDEN T aov_in6.in}
+ addUserKnob {6 aov_in6_solo l solo -STARTLINE +HIDDEN}
+ addUserKnob {41 aov_in7_in l "layer AOV7:" +HIDDEN T aov_in7.in}
+ addUserKnob {6 aov_in7_solo l solo -STARTLINE +HIDDEN}
+ addUserKnob {41 aov_in8_in l "layer AOV8:" +HIDDEN T aov_in8.in}
+ addUserKnob {6 aov_in8_solo l solo -STARTLINE +HIDDEN}
+ addUserKnob {3 layer_count l "layer counter" +INVISIBLE}
+ layer_count 1
+ addUserKnob {26 space_02 l "" +STARTLINE T " "}
+ addUserKnob {26 aovs_grade l "@b;Grade Layers"}
+ addUserKnob {19 blackpoint +INVISIBLE R -1 1}
+ addUserKnob {6 blackpoint_panelDropped l "panel dropped state" -STARTLINE +HIDDEN}
+ addUserKnob {19 whitepoint +INVISIBLE R 0 4}
+ whitepoint 1
+ addUserKnob {6 whitepoint_panelDropped l "panel dropped state" -STARTLINE +HIDDEN}
+ addUserKnob {19 black l lift R -1 1}
+ addUserKnob {6 black_panelDropped l "panel dropped state" -STARTLINE +HIDDEN}
+ addUserKnob {19 white l gain R 0 4}
+ white 1
+ addUserKnob {6 white_panelDropped l "panel dropped state" -STARTLINE +HIDDEN}
+ addUserKnob {19 multiply R 0 4}
+ multiply 1
+ addUserKnob {6 multiply_panelDropped l "panel dropped state" -STARTLINE +HIDDEN}
+ addUserKnob {19 offset R -1 1}
+ addUserKnob {6 offset_panelDropped l "panel dropped state" -STARTLINE +HIDDEN}
+ addUserKnob {19 gamma R 0.2 5}
+ gamma 1
+ addUserKnob {6 gamma_panelDropped l "panel dropped state" -STARTLINE +HIDDEN}
+ addUserKnob {26 lum_mix l "mix luminance" T ""}
+ addUserKnob {41 mix_luminance l "" -STARTLINE T Grade.mix_luminance}
+ addUserKnob {26 ""}
+ addUserKnob {26 space_03 l "" +STARTLINE T " "}
+ addUserKnob {26 saturation_layer l "@b;Saturation Layers"}
+ addUserKnob {7 saturation R 0 2.5}
+ saturation 1
+ addUserKnob {26 space_04 l "" +STARTLINE T " "}
+ addUserKnob {26 mask_layer l "@b;Mask"}
+ addUserKnob {26 "" l mask T ""}
+ addUserKnob {41 maskChannelMask l "" -STARTLINE T Grade.maskChannelMask}
+ addUserKnob {41 invert_mask l invert -STARTLINE T Grade.invert_mask}
+ addUserKnob {26 ""}
+ addUserKnob {41 mix T Grade.mix}
+ addUserKnob {26 ""}
+ addUserKnob {41 link_layer_aov1 l "Layer AOV1" +DISABLED +HIDDEN}
+ addUserKnob {26 lightgrade_credit l "" t "link to help" +STARTLINE T "<p style='color:#A2A1A1'><a href='https://github.com/Duckydav/LayerManager' style='text-decoration:none; color:#A2A1A1;'>dD_Light<b><font color='#545454'>Grade</font></b></a> <font color='#888888'>v3.2</font> &copy; 2024<span style='color:#888888;'> | </span><a href='https://www.linkedin.com/in/davidfrancois/' style='text-decoration:none; color:#888888;'><font size=3>DavidF</font></a> <span style='color:#888888;'> | </span><a href='https://github.com/Duckydav/LayerManager' style='text-decoration:none; color:#FCB132;'><font size=3>help</font></a></p>"}
+}
+ Input {
+  inputs 0
+  name mask
+  xpos 1539
+  ypos -690
+  number 1
+ }
+ Dot {
+  name Dot1
+  xpos 1573
+  ypos -540
+ }
+set N9e09d000 [stack 0]
+ Input {
+  inputs 0
+  name in
+  xpos -11
+  ypos -612
+ }
+ Expression {
+  inputs 1+1
+  maskChannelMask none
+  name Expression1
+  xpos -11
+  ypos -558
+  disable true
+ }
+ Dot {
+  name in_dot
+  xpos 23
+  ypos -320
+ }
+set N9e09dc00 [stack 0]
+ Dot {
+  name Dot3
+  note_font_size 22
+  xpos -133
+  ypos -320
+ }
+add_layer {CryptoObject00 CryptoObject00.red CryptoObject00.green CryptoObject00.blue CryptoObject00.alpha}
+add_layer {CryptoObject01 CryptoObject01.red CryptoObject01.green CryptoObject01.blue CryptoObject01.alpha}
+add_layer {CryptoObject02 CryptoObject02.red CryptoObject02.green CryptoObject02.blue CryptoObject02.alpha}
+add_layer {N_world N_world.red N_world.green N_world.blue N_world.alpha}
+add_layer {P_object P_object.red P_object.green P_object.blue P_object.alpha}
+add_layer {P_world P_world.X P_world.Y P_world.Z}
+add_layer {depth_extra depth_extra.V}
+add_layer {albedo albedo.red albedo.green albedo.blue albedo.alpha}
+add_layer {normal normal.X normal.Y normal.Z}
+add_layer {uv_extra uv_extra.X uv_extra.Y uv_extra.Z}
+ Group {
+  name UnlimitedRemove
+  tile_color 0x9e3a61ff
+  xpos -167
+  ypos 883
+  lock_connections true
+  addUserKnob {20 user l UnlimitedRemove}
+  addUserKnob {20 info l Info n 1}
+  info 0
+  addUserKnob {26 text_info l "" +STARTLINE T "<font color=#e1f2a2>UnlimitedRemove v1.2</font> | author: Guillermo Algora\n<br>\nThe functionality of the native Remove node with the possibility of unlimited channel slots.\n<br>"}
+  addUserKnob {20 endGroup n -1}
+  addUserKnob {4 operation t "Remove: the named channels are deleted\nKeep: all but the named channels are deleted" M {remove keep "" "" "" "" "" "" "" "" "" ""}}
+  addUserKnob {26 description l "" -STARTLINE T "                   Channel slots:"}
+  addUserKnob {22 add l "Add (+4)" t "Add four additional channel slots" -STARTLINE T "def add_remove_node(switch_node):\n\n    last_remove_node = switch_node.input(0)\n\n    nukescripts.clear_selection_recursive()\n    last_remove_node.setSelected(True)\n    new_remove_node = nuke.createNode(\"Remove\", inpanel=False)\n    nukescripts.clear_selection_recursive()\n\n    new_remove_node\['operation'].setValue(\"remove\")\n    for knob_name in (\"channels\", \"channels2\", \"channels3\", \"channels4\"):\n        new_remove_node\[knob_name].setValue(\"none\")\n\n    new_remove_node\['xpos'].setExpression('\{\}'.format(last_remove_node\['xpos'].value()))\n    new_remove_node\['ypos'].setExpression('\{\}'.format(last_remove_node\['ypos'].value()+50))\n\n    return new_remove_node\n\ndef add_keep_node(switch_node, new_remove_node):\n\n    last_keep_node = switch_node.input(1)\n\n    nukescripts.clear_selection_recursive()\n    last_keep_node.setSelected(True)\n    new_keep_node = nuke.createNode(\"Remove\", inpanel=False)\n\n    new_keep_node\['operation'].setValue(\"keep\")\n    for knob_name in (\"channels\", \"channels2\", \"channels3\", \"channels4\"):\n        new_keep_node\[knob_name].setValue(\"none\")\n\n    new_keep_node\['xpos'].setExpression('\{\}'.format(last_keep_node\['xpos'].value()-100))\n    new_keep_node\['ypos'].setExpression('\{\}'.format(last_keep_node\['ypos'].value()+50))\n\n    new_keep_node.setSelected(True)\n    copy_node = nuke.createNode(\"Copy\", inpanel=False)\n    nukescripts.clear_selection_recursive()\n\n    for knob_name in (\"from0\", \"from1\", \"from2\", \"from3\"):\n        copy_node\[knob_name].setValue(\"none\")\n    for knob_name in (\"to0\", \"to1\", \"to2\", \"to3\"):\n        copy_node\[knob_name].setValue(\"none\")\n   \n    copy_node\['channels'].setValue(\"all\")\n    copy_node\['metainput'].setValue(\"All\")\n    copy_node\['rangeinput'].setValue(\"All\")\n    copy_node\['bbox'].setValue(\"union\")\n     \n    copy_node\['xpos'].setExpression('\{\}'.format(new_keep_node\['xpos'].value()+100))\n    copy_node\['ypos'].setExpression('\{\}'.format(new_keep_node\['ypos'].value()))\n\n    copy_node.setInput(0, last_keep_node)\n    new_keep_node.setInput(0, nuke.toNode(\"Dot1\"))\n\n    for knob_name in (\"channels\", \"channels2\", \"channels3\", \"channels4\"):\n        new_keep_node\[knob_name].setExpression(new_remove_node.name() + '.\{\}'.format(knob_name))\n\ndef add_channels(this_node, new_remove_node):\n\n    highest = \[]\n    for knob in this_node.allKnobs():\n        if \"channel\" in knob.name():\n            number = knob.name().split(\"channels\")\[1]\n            if number.isdigit():\n                highest.append(int(number))\n    highest = max(highest)\n\n    for knob_name in (\"channels\", \"channels2\", \"channels3\", \"channels4\"):\n        highest += 1\n        knob = nuke.Link_Knob(\"channels\" + '\{\}'.format(highest))\n        knob.setLink(new_remove_node.name() +'.\{\}'.format(knob_name))\n        this_node.addKnob(knob)\n\nundo = nuke.Undo()\nundo.disable()\n\ntry:\n    this_node = nuke.thisNode()\n\n    group = this_node\n    group.begin()\n\n    switch_node = nuke.toNode(\"Switch1\")\n    switch_node\['xpos'].setExpression('\{\}'.format(switch_node\['xpos'].value()))\n    switch_node\['ypos'].setExpression('\{\}'.format(switch_node\['ypos'].value()+50))\n\n    output_node = nuke.toNode(\"Output1\")\n    output_node\['xpos'].setExpression('\{\}'.format(output_node\['xpos'].value()))\n    output_node\['ypos'].setExpression('\{\}'.format(output_node\['ypos'].value()+50))\n\n    new_remove_node = add_remove_node(switch_node)\n    add_keep_node(switch_node, new_remove_node)\n\n    group.end()\n\n    add_channels(this_node, new_remove_node)\n\nfinally:\n    undo.enable()"}
+  addUserKnob {22 remove l "Remove (last 4)" t "Remove the last four additional channel slots" -STARTLINE T "def get_highest(this_node):\n\n    highest = \[]\n    for knob in this_node.allKnobs():\n        if \"channel\" in knob.name():\n            number = knob.name().split(\"channels\")\[1]\n            if number.isdigit():\n                highest.append(int(number))\n    highest = max(highest) + 1\n    return highest\n\ndef remove_channels(this_node, highest):\n\n        for i in range (0,4):\n            highest -= 1\n            this_node.removeKnob(this_node.knobs()\[(\"channels\" + '\{\}'.format(highest))])\n\ndef remove_nodes(switch_node):\n    copy_node = switch_node.input(1)\n    keep_node = copy_node.input(1)\n    remove_node = switch_node.input(0)\n\n    nuke.delete(copy_node)\n    nuke.delete(keep_node)\n    nuke.delete(remove_node)\n\nundo = nuke.Undo()\nundo.disable()\n\ntry:\n    this_node = nuke.thisNode()\n    highest = get_highest(this_node)\n\n    if highest > 5:\n        \n        remove_channels(this_node, highest)\n\n        group = this_node\n        group.begin()\n\n        switch_node = nuke.toNode(\"Switch1\")\n        switch_node\['xpos'].setExpression('\{\}'.format(switch_node\['xpos'].value()))\n        switch_node\['ypos'].setExpression('\{\}'.format(switch_node\['ypos'].value()-50))\n\n        output_node = nuke.toNode(\"Output1\")\n        output_node\['xpos'].setExpression('\{\}'.format(output_node\['xpos'].value()))\n        output_node\['ypos'].setExpression('\{\}'.format(output_node\['ypos'].value()-50))\n\n        remove_nodes(switch_node)\n\n        group.end()\n\nfinally:\n    undo.enable()"}
+  addUserKnob {41 channels T Remove1.channels}
+  addUserKnob {41 channels2 T Remove1.channels2}
+  addUserKnob {41 channels3 T Remove1.channels3}
+  addUserKnob {41 channels4 T Remove1.channels4}
+  addUserKnob {41 channels5 T Remove3.channels}
+  addUserKnob {41 channels6 T Remove3.channels2}
+  addUserKnob {41 channels7 T Remove3.channels3}
+  addUserKnob {41 channels8 T Remove3.channels4}
+  addUserKnob {41 channels9 T Remove5.channels}
+  addUserKnob {41 channels10 T Remove5.channels2}
+  addUserKnob {41 channels11 T Remove5.channels3}
+  addUserKnob {41 channels12 T Remove5.channels4}
+ }
+  Input {
+   inputs 0
+   name Input1
+   xpos {{0.0 x1001 0}}
+   ypos {{0.0 x1001 -1}}
+  }
+  Dot {
+   name Dot1
+   tile_color 0x949494ff
+   note_font_size 22
+   note_font_color 0xffffffff
+   xpos {{34.0 x1001 26}}
+   ypos {{125.0 x1001 125}}
+  }
+set N9f552800 [stack 0]
+  Remove {
+   operation keep
+   channels {{{Remove5.channels}}}
+   channels2 {{{Remove5.channels2}}}
+   channels3 {{{Remove5.channels3}}}
+   channels4 {{{Remove5.channels4}}}
+   name Remove6
+   xpos 89
+   ypos 215
+  }
+push $N9f552800
+  Remove {
+   operation keep
+   channels {{{Remove3.channels}}}
+   channels2 {{{Remove3.channels2}}}
+   channels3 {{{Remove3.channels3}}}
+   channels4 {{{Remove3.channels4}}}
+   name Remove4
+   xpos 89
+   ypos 165
+  }
+push $N9f552800
+  Remove {
+   operation keep
+   channels {{{Remove1.channels}}}
+   channels2 {{{Remove1.channels2}}}
+   channels3 {{{Remove1.channels3}}}
+   channels4 {{{Remove1.channels4}}}
+   name Remove2
+   xpos {{189.0 x1001 188}}
+   ypos {{115.0 x1001 115}}
+  }
+  Copy {
+   inputs 2
+   channels all
+   metainput All
+   rangeinput All
+   name Copy1
+   xpos 189
+   ypos 165
+  }
+  Copy {
+   inputs 2
+   channels all
+   metainput All
+   rangeinput All
+   name Copy2
+   xpos 189
+   ypos 215
+  }
+push $N9f552800
+  Remove {
+   channels CryptoObject00
+   channels2 CryptoObject01
+   channels3 CryptoObject02
+   channels4 N_world
+   name Remove1
+   xpos {{-185.0 x1001 -183}}
+   ypos {{115.0 x1001 115}}
+  }
+  Remove {
+   channels P_object
+   channels2 P_world
+   channels3 depth_extra
+   channels4 albedo
+   name Remove3
+   xpos -185
+   ypos 165
+  }
+  Remove {
+   channels normal
+   channels2 uv_extra
+   name Remove5
+   xpos -185
+   ypos 215
+  }
+  Switch {
+   inputs 2
+   which {{UnlimitedRemove.operation}}
+   name Switch1
+   xpos {{0.0 x1001 0}}
+   ypos {{332.0 x1001 233}}
+  }
+  Output {
+   name Output1
+   xpos {{0.0 x1001 -7}}
+   ypos {{442.0 x1001 342}}
+  }
+ end_group
+ LayerContactSheet {
+  width 1920
+  height 1080
+  showLayerNames true
+  name LayerContactSheet1
+  xpos -167
+  ypos 982
+ }
+push $N9e09d000
+ Dot {
+  name Dot5
+  xpos 1573
+  ypos 329
+ }
+set N9f583800 [stack 0]
+ Dot {
+  name Dot6
+  xpos 1573
+  ypos 426
+ }
+set N9f583c00 [stack 0]
+ Dot {
+  name Dot2
+  xpos 1573
+  ypos 491
+ }
+push $N9f583c00
+push $N9f583800
+push $N9e09dc00
+ Shuffle2 {
+  fromInput1 {{0} B}
+  fromInput2 {{0} B}
+  mappings "4 black -1 -1 rgba.red 0 0 black -1 -1 rgba.green 0 1 black -1 -1 rgba.blue 0 2 black -1 -1 rgba.alpha 0 3"
+  name Shuffle2
+  xpos 303
+  ypos -313
+ }
+set N9f5a6400 [stack 0]
+ Shuffle {
+  name aov_in8
+  label "\[value in]"
+  xpos 1130
+  ypos -184
+ }
+push $N9f5a6400
+ Dot {
+  name in2_dot
+  label in1
+  xpos 337
+  ypos -269
+ }
+set N9f5a6c00 [stack 0]
+ Shuffle {
+  name aov_in7
+  label "\[value in]"
+  xpos 1005
+  ypos -182
+ }
+push $N9f5a6c00
+ Shuffle {
+  name aov_in6
+  label "\[value in]"
+  xpos 879
+  ypos -178
+ }
+push $N9f5a6c00
+ Shuffle {
+  name aov_in5
+  label "\[value in]"
+  xpos 774
+  ypos -175
+ }
+push $N9f5a6c00
+ Shuffle {
+  name aov_in4
+  label "\[value in]"
+  xpos 687
+  ypos -176
+ }
+push $N9f5a6c00
+ Shuffle {
+  name aov_in3
+  label "\[value in]"
+  xpos 560
+  ypos -177
+ }
+push $N9f5a6c00
+ Shuffle {
+  name aov_in2
+  label "\[value in]"
+  xpos 437
+  ypos -190
+ }
+push $N9f5a6c00
+ Shuffle {
+  in none
+  name aov_in1
+  label "\[value in]"
+  xpos 303
+  ypos -191
+ }
+ Merge2 {
+  inputs 2
+  operation plus
+  name Merge2
+  xpos 303
+  ypos -119
+  disable {{parent.aov_in2.disable}}
+ }
+ Merge2 {
+  inputs 2
+  operation plus
+  name Merge3
+  xpos 300
+  ypos -68
+  disable {{parent.aov_in3.disable}}
+ }
+ Merge2 {
+  inputs 2
+  operation plus
+  name Merge4
+  xpos 300
+  ypos -27
+  disable {{parent.aov_in4.disable}}
+ }
+ Merge2 {
+  inputs 2
+  operation plus
+  name Merge5
+  xpos 300
+  ypos 11
+  disable {{parent.aov_in5.disable}}
+ }
+ Merge2 {
+  inputs 2
+  operation plus
+  name Merge6
+  xpos 300
+  ypos 68
+  disable {{parent.aov_in6.disable}}
+ }
+ Merge2 {
+  inputs 2
+  operation plus
+  name Merge7
+  xpos 300
+  ypos 105
+  disable {{parent.aov_in7.disable}}
+ }
+ Merge2 {
+  inputs 2
+  operation plus
+  name Merge1
+  xpos 299
+  ypos 145
+  disable {{parent.aov_in8.disable}}
+ }
+ Dot {
+  name out2_dot
+  label in2
+  xpos 334
+  ypos 183
+ }
+set N9f646800 [stack 0]
+ Grade {
+  inputs 1+1
+  channels all
+  blackpoint {{parent.blackpoint.r} {parent.blackpoint.g} {parent.blackpoint.b} {parent.blackpoint.a}}
+  whitepoint {{parent.whitepoint.r} {parent.whitepoint.g} {parent.whitepoint.b} {parent.whitepoint.a}}
+  black {{parent.black.r} {parent.black.g} {parent.black.b} {parent.black.a}}
+  white {{parent.white.r} {parent.white.g} {parent.white.b} {parent.white.a}}
+  multiply {{parent.multiply.r} {parent.multiply.g} {parent.multiply.b} {parent.multiply.a}}
+  add {{parent.offset.r} {parent.offset.g} {parent.offset.b} {parent.offset.a}}
+  gamma {{parent.gamma.r} {parent.gamma.g} {parent.gamma.b} {parent.gamma.a}}
+  maskChannelInput -rgba.alpha
+  unpremult -rgba.alpha
+  name Grade
+  xpos 300
+  ypos 320
+ }
+ Saturation {
+  inputs 1+1
+  channels all
+  saturation {{parent.saturation}}
+  maskChannelInput -rgba.alpha
+  invert_mask {{parent.Grade.invert_mask}}
+  unpremult -rgba.alpha
+  mix {{parent.Grade.mix}}
+  name Saturation
+  xpos 300
+  ypos 423
+ }
+set N9f647000 [stack 0]
+ Expression {
+  inputs 1+1
+  maskChannelMask none
+  name Expression2
+  selected true
+  xpos 300
+  ypos 488
+  disable {{parent.Expression1.disable}}
+ }
+ Dot {
+  name Dot7
+  xpos 334
+  ypos 535
+ }
+set N9f647800 [stack 0]
+ Dot {
+  name solo_dot
+  label solo
+  xpos 334
+  ypos 983
+ }
+ Dot {
+  inputs 0
+  name Dot4
+  label mute
+  xpos 482
+  ypos 906
+ }
+push $N9f647800
+push $N9f647800
+push $N9f647800
+push $N9f647800
+push $N9f647800
+push $N9f647800
+push $N9f647800
+push $N9f647800
+push $N9f647000
+push $N9f646800
+push $N9e09dc00
+ Merge2 {
+  inputs 2
+  operation from
+  output rgb
+  name Merge_from
+  xpos -8
+  ypos 180
+ }
+ Grade {
+  channels all
+  name Grade1
+  xpos -8
+  ypos 308
+ }
+ Merge2 {
+  inputs 2
+  operation plus
+  output rgb
+  name Merge_plus
+  xpos -8
+  ypos 429
+ }
+ ShuffleCopy {
+  inputs 2
+  in2 none
+  black red
+  white green
+  red2 blue
+  green2 alpha
+  out none
+  out2 {{{parent.aov_in1.in}}}
+  name aov_out1
+  xpos -8
+  ypos 532
+ }
+ ShuffleCopy {
+  inputs 2
+  in2 none
+  black red
+  white green
+  red2 blue
+  green2 alpha
+  out none
+  out2 {{{parent.aov_in2.in}}}
+  name aov_out2
+  xpos -8
+  ypos 576
+ }
+ ShuffleCopy {
+  inputs 2
+  in2 none
+  black red
+  white green
+  red2 blue
+  green2 alpha
+  out none
+  out2 {{{parent.aov_in3.in}}}
+  name aov_out3
+  xpos -8
+  ypos 626
+ }
+ ShuffleCopy {
+  inputs 2
+  in2 none
+  black red
+  white green
+  red2 blue
+  green2 alpha
+  out none
+  out2 {{{parent.aov_in4.in}}}
+  name aov_out4
+  xpos -5
+  ypos 670
+ }
+ ShuffleCopy {
+  inputs 2
+  in2 none
+  black red
+  white green
+  red2 blue
+  green2 alpha
+  out none
+  out2 {{{parent.aov_in5.in}}}
+  name aov_out5
+  xpos -5
+  ypos 711
+ }
+ ShuffleCopy {
+  inputs 2
+  in2 none
+  black red
+  white green
+  red2 blue
+  green2 alpha
+  out none
+  out2 {{{parent.aov_in6.in}}}
+  name aov_out6
+  xpos -5
+  ypos 761
+ }
+ ShuffleCopy {
+  inputs 2
+  in2 none
+  black red
+  white green
+  red2 blue
+  green2 alpha
+  out none
+  out2 {{{parent.aov_in7.in}}}
+  name aov_out7
+  xpos -10
+  ypos 807
+ }
+ ShuffleCopy {
+  inputs 2
+  in2 none
+  black red
+  white green
+  red2 blue
+  green2 alpha
+  out none
+  out2 {{{parent.aov_in8.in}}}
+  name aov_out8
+  xpos -10
+  ypos 857
+ }
+ Dot {
+  name result_dot
+  label result
+  xpos 35
+  ypos 1052
+ }
+ Switch {
+  inputs 4
+  which {{"parent.contactsheet ? 3 :parent.aov_in1_solo ? 2 : parent.aov_in2_solo ? 2 : parent.aov_in3_solo ? 2 : parent.aov_in4_solo ? 2 : parent.aov_in5_solo ? 2 : parent.aov_in6_solo ? 2 : parent.aov_in7_solo ? 2 : parent.aov_in8_solo ? 2 : 0\n"}}
+  name Switch_1
+  xpos 300
+  ypos 1049
+  addUserKnob {20 User}
+  addUserKnob {6 solo1 -STARTLINE}
+  solo1 {{parent.aov_in1_solo}}
+  addUserKnob {6 solo2 -STARTLINE}
+  solo2 {{parent.aov_in2_solo}}
+  addUserKnob {6 solo3 -STARTLINE}
+  solo3 {{parent.aov_in3_solo}}
+  addUserKnob {6 solo4 -STARTLINE}
+  solo4 {{parent.aov_in4_solo}}
+  addUserKnob {6 solo5 -STARTLINE}
+  solo5 {{parent.aov_in5_solo}}
+  addUserKnob {6 solo6 -STARTLINE}
+  solo6 {{parent.aov_in6_solo}}
+  addUserKnob {6 solo7 -STARTLINE}
+  solo7 {{parent.aov_in7_solo}}
+  addUserKnob {6 solo8 -STARTLINE}
+  solo8 {{parent.aov_in8_solo}}
+ }
+ Output {
+  name Output1
+  xpos 300
+  ypos 1147
+ }
+end_group

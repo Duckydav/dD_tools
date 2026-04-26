@@ -1,0 +1,21 @@
+# Layer Manager v2.42 - Python Dependencies
+#
+# Note: Nuke includes PySide2 bundled, so pip installation is not required
+# for studio deployment. This file is for reference and external development.
+
+# Core UI Framework
+PySide2>=5.15.0
+
+# Python 3.7+ Standard Library
+# (No external dependencies for standard lib features)
+
+# Optional: For development
+# pytest>=6.0  # Unit testing
+# black>=21.0  # Code formatting
+# flake8>=3.9  # Linting
+
+# Nuke-specific notes:
+# - Nuke 13.0+ bundles Python 3.7+
+# - Nuke 14.0+ bundles Python 3.9+
+# - PySide2 is bundled with Nuke
+# - Do NOT use pip to install PySide2 in Nuke environment
