@@ -2,7 +2,7 @@
 
 A personal collection of open-source tools to streamline the compositing workflow in Nuke.
 
-**Author:** David Francois — VFX Compositor & Pipeline TD
+**Author:** David Francois — Compositor & Technical Artist
 **GitHub:** [github.com/Duckydav](https://github.com/Duckydav)
 **LinkedIn:** [linkedin.com/in/davidfrancois](https://www.linkedin.com/in/davidfrancois/)
 
@@ -23,25 +23,22 @@ A Nuke gizmo for per-layer color grading of EXR AOVs.
 - Integrates with Layer Manager
 - Supports multiple light layer workflow
 
-### Crypto Tool
-Utilities for working with Cryptomatte nodes in Nuke.
+### Crypto Tool 
+Experimental utilities for working with Cryptomatte nodes in Nuke.
 - Smart layer name parsing and filtering
 - Configurable exclude/singularize word lists
 
-### Label Generator
-Automated node labeling system with customizable templates.
-
-### Label
+### Label auto
 Quick label tools for selected nodes.
 
-### Shuffle Utilities
-Helper functions for creating and managing Shuffle nodes from EXR layers.
+### $GUI 
+$GUI is a Nuke tool designed to manage the disable knob and optimize workflows.
 
-### Mattes Inclusion
-DIMATTE layer remapper — remaps matte layers onto a Read node for downstream use.
+### Shuffle Utilities
+Shuffle Auto simplifies the use of Shuffle2 nodes in Nuke by automatically displaying connections directly in the Node Graph.
 
 ### Viewer Caller
-Organizes and routes Viewer inputs for cleaner compositing setups.
+Viewer Caller is a Python script designed to locate and organize Viewer nodes in Nuke's Node Graph.
 
 ---
 
@@ -92,7 +89,7 @@ STUDIO_SCRIPT_DIR = r"/your/studio/toolsets"
 
 If you use dD Tools in your work, a credit is appreciated:
 
-**David Francois** — VFX Compositor & Pipeline TD
+**David Francois** — Compositor & Technical Artist
 - GitHub: [github.com/Duckydav](https://github.com/Duckydav)
 - LinkedIn: [linkedin.com/in/davidfrancois](https://www.linkedin.com/in/davidfrancois/)
 
