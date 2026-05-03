@@ -71,6 +71,7 @@ Viewer Caller is a Python script designed to locate and organize Viewer nodes in
 2. Copy `init.py` into your `.nuke` directory (or add the following line to your existing `~/.nuke/init.py`):
 
 ```python
+import nuke
 nuke.pluginAddPath("dD_tools")
 ```
 
@@ -81,6 +82,7 @@ nuke.pluginAddPath("dD_tools")
 Deploy `dD_tools/` to a shared network location and add the path in your studio `init.py`:
 
 ```python
+import nuke
 nuke.pluginAddPath(r"/path/to/shared/nuke/dD_tools")
 ```
 
